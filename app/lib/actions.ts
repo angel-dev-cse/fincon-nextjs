@@ -27,12 +27,12 @@ export async function createInvoice(formData: FormData) {
 
   try {
     await sql`INSERT INTO invoices (customer_id, amount, status, date) VALUES (${customerId}, ${amountInCents}, ${status}, ${date})`;
-
-    revalidatePath("/dashboard/invoices");
-    redirect("/dashboard/invoices");
   } catch (error) {
     return { message: `Database error while creating invoice: ${error}` };
   }
+  
+  revalidatePath("/dashboard/invoices");
+  redirect("/dashboard/invoices");
   // console.log(rawFormData);
 }
 
@@ -48,18 +48,16 @@ export async function updateInvoice(id: string, formData: FormData) {
   const amountInCents = amount * 100;
 
   try {
-    await sql`UPDATE invoices SET customer_id = ${customerId}, amount = ${amount}, status=${status} where id= ${id}`;
-
-    revalidatePath("/dashboard/invoices");
-    redirect("/dashboard/invoices");
+    await sql`UPDATE invoices SET customer_id = ${customerId}, amount = ${amountInCents}, status=${status} where id= ${id}`;
   } catch (error) {
     return { message: `Database error while updating invoice: ${error}` };
   }
+
+  revalidatePath("/dashboard/invoices");
+  redirect("/dashboard/invoices");
 }
 
 export async function deleteInvoice(id: string) {
-  throw new Error("Intentional error while deleting invoice");
-
   try {
     await sql`DELETE FROM invoices WHERE id=${id}`;
     revalidatePath("/dashboard/invoices");
